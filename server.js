@@ -2,6 +2,11 @@ const express = require('express')
 const path = require('path')
 const fs = require('fs')
 
+const uniqid = require('uniqid'); 
+
+// console.log(uniqid()); // -> 4n5pxq24kpiob12og9
+// console.log(uniqid(), uniqid()); // -> 4n5pxq24kriob12ogd, 4n5pxq24ksiob12ogl
+
 const app = express()
 const PORT = process.env.PORT || 3001
 
@@ -15,6 +20,20 @@ app.get('/api/notes', (req, res) => {
         const notes = JSON.parse(data)
         console.log(notes)
         res.json(notes)
+    })
+})
+
+app.post('/api/notes', (req, res) => {
+    console.log(req.body)
+    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+        const notes = JSON.parse(data)
+        console.log(notes)
+        let note = {
+            id:uniqid(), 
+            ...req.body
+        }
+        notes.push(note)
+        fs.writeFile('./db/db.json', JSON.stringify(notes), (err) => {res.json(notes)})
     })
 })
 
